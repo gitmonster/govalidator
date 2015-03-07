@@ -74,7 +74,7 @@ func IsUTFLetter(str string) bool {
 
 }
 
-// IsAlphanumeric check if the string contains only letters and numbers. Empty string is valid.
+// IsAlphanumeric check if the string contains only letters (a-zA-Z) and numbers (0-9). Empty string is valid.
 func IsAlphanumeric(str string) bool {
 	if IsNull(str) {
 		return true
@@ -96,7 +96,8 @@ func IsUTFLetterNumeric(str string) bool {
 
 }
 
-// IsNumeric check if the string contains only numbers. Empty string is valid.
+// IsNumeric check if the string contains only numbers. A number may start with
+// a sign (+ or -). Empty string is valid.
 func IsNumeric(str string) bool {
 	if IsNull(str) {
 		return true
@@ -126,7 +127,8 @@ func IsUTFNumeric(str string) bool {
 
 }
 
-// IsUTFDigit check if the string contains only unicode radix-10 decimal digits. Empty string is valid.
+// IsUTFDigit check if the string contains only unicode radix-10 decimal digits.
+// A Digit may start with a sign (+ or -). Empty string is valid.
 func IsUTFDigit(str string) bool {
 	if IsNull(str) {
 		return true
@@ -148,21 +150,26 @@ func IsUTFDigit(str string) bool {
 }
 
 // IsHexadecimal check if the string is a hexadecimal number.
+// A valid Hexadecimal string may not begin with "0x". Empty string is invalid.
 func IsHexadecimal(str string) bool {
 	return rxHexadecimal.MatchString(str)
 }
 
 // IsHexcolor check if the string is a hexadecimal color.
+// A valid Hexcolor string may starts with #. Empty string is invalid.
 func IsHexcolor(str string) bool {
 	return rxHexcolor.MatchString(str)
 }
 
 // IsRGBcolor check if the string is a valid RGB color in form rgb(RRR, GGG, BBB).
+// Empty string is invalid.
 func IsRGBcolor(str string) bool {
 	return rxRGBcolor.MatchString(str)
 }
 
 // IsLowerCase check if the string is lowercase. Empty string is valid.
+// The Unicode lowercase to uppercase standard is used, anomalies may happen with
+// some letters. For more information see http://unicode.org/faq/casemap_charprop.html
 func IsLowerCase(str string) bool {
 	if IsNull(str) {
 		return true
@@ -171,6 +178,8 @@ func IsLowerCase(str string) bool {
 }
 
 // IsUpperCase check if the string is uppercase. Empty string is valid.
+// The Unicode lowercase to uppercase standard is used, anomalies may happen with
+// some letters. For more information see http://unicode.org/faq/casemap_charprop.html
 func IsUpperCase(str string) bool {
 	if IsNull(str) {
 		return true
@@ -178,7 +187,8 @@ func IsUpperCase(str string) bool {
 	return str == strings.ToUpper(str)
 }
 
-// IsInt check if the string is an integer. Empty string is valid.
+// IsInt check if the string is an integer. A valid int may not have leading zeros.
+// A valid int may starts with a sign (+ or -). Empty string is valid.
 func IsInt(str string) bool {
 	if IsNull(str) {
 		return true
@@ -186,7 +196,8 @@ func IsInt(str string) bool {
 	return rxInt.MatchString(str)
 }
 
-// IsFloat check if the string is a float.
+// IsFloat check if the string is a float. A valid float may have leading zeros.
+// A valid float may starts with a sign (+ or -). Empty string is invalid.
 func IsFloat(str string) bool {
 	return str != "" && rxFloat.MatchString(str)
 }
@@ -214,27 +225,28 @@ func IsByteLength(str string, min, max int) bool {
 	return len(str) >= min && len(str) <= max
 }
 
-// IsUUIDv3 check if the string is a UUID version 3.
+// IsUUIDv3 check if the string is a UUID version 3. Empty string is invalid.
 func IsUUIDv3(str string) bool {
 	return rxUUID3.MatchString(str)
 }
 
-// IsUUIDv4 check if the string is a UUID version 4.
+// IsUUIDv4 check if the string is a UUID version 4. Empty string is invalid.
 func IsUUIDv4(str string) bool {
 	return rxUUID4.MatchString(str)
 }
 
-// IsUUIDv5 check if the string is a UUID version 5.
+// IsUUIDv5 check if the string is a UUID version 5. Empty string is invalid.
 func IsUUIDv5(str string) bool {
 	return rxUUID5.MatchString(str)
 }
 
-// IsUUID check if the string is a UUID (version 3, 4 or 5).
+// IsUUID check if the string is a UUID (version 3, 4 or 5). Empty string is invalid.
 func IsUUID(str string) bool {
 	return rxUUID.MatchString(str)
 }
 
-// IsCreditCard check if the string is a credit card.
+// IsCreditCard check if the string is a credit card. A valid CC string may contains spaces.
+// Empty string is invalid.
 func IsCreditCard(str string) bool {
 	r, _ := regexp.Compile("[^0-9]+")
 	sanitized := r.ReplaceAll([]byte(str), []byte(""))
@@ -267,17 +279,20 @@ func IsCreditCard(str string) bool {
 	return false
 }
 
-// IsISBN10 check if the string is an ISBN version 10.
+// IsISBN10 check if the string is an ISBN version 10. A valid ISBN10 string may contains (-).
+// Empty string is invalid.
 func IsISBN10(str string) bool {
 	return IsISBN(str, 10)
 }
 
-// IsISBN13 check if the string is an ISBN version 13.
+// IsISBN13 check if the string is an ISBN version 13. A valid ISBN13 string may contains (-).
+// Empty string is invalid.
 func IsISBN13(str string) bool {
 	return IsISBN(str, 13)
 }
 
-// IsISBN check if the string is an ISBN (version 10 or 13).
+// IsISBN check if the string is an ISBN (version 10 or 13). A valid ISBN string may contains (-).
+// Empty string is invalid.
 // If version value is not equal to 10 or 13, it will be check both variants.
 func IsISBN(str string, version int) bool {
 	r, _ := regexp.Compile("[\\s-]+")
@@ -362,12 +377,13 @@ func IsVariableWidth(str string) bool {
 	return rxHalfWidth.MatchString(str) && rxFullWidth.MatchString(str)
 }
 
-// IsBase64 check if a string is base64 encoded.
+// IsBase64 check if a string is base64 encoded. Empty string is invalid.
 func IsBase64(str string) bool {
 	return rxBase64.MatchString(str)
 }
 
 // IsFilePath check is a string is Win or Unix file path and returns it's type.
+// Empty string is invalid.
 func IsFilePath(str string) (bool, int) {
 	if rxWinPath.MatchString(str) {
 		//check windows path limit see:
@@ -382,7 +398,7 @@ func IsFilePath(str string) (bool, int) {
 	return false, Unknown
 }
 
-// IsDataURI checks if a string is base64 encoded data URI such as an image
+// IsDataURI checks if a string is base64 encoded data URI such as an image. Empty string is invalid.
 func IsDataURI(str string) bool {
 	dataURI := strings.Split(str, ",")
 	if !rxDataURI.MatchString(dataURI[0]) {
@@ -391,7 +407,8 @@ func IsDataURI(str string) bool {
 	return IsBase64(dataURI[1])
 }
 
-// IsISO3166Alpha2 checks if a string is valid two-letter country code
+// IsISO3166Alpha2 checks if a string is valid two-letter country code. Empty string is invalid.
+// For more information see https://www.iso.org/obp/ui/#search/code/ Code Type "Officially Assigned Codes"
 func IsISO3166Alpha2(str string) bool {
 	for _, entry := range ISO3166List {
 		if str == entry.Alpha2Code {
@@ -401,7 +418,8 @@ func IsISO3166Alpha2(str string) bool {
 	return false
 }
 
-// IsISO3166Alpha3 checks if a string is valid three-letter country code
+// IsISO3166Alpha3 checks if a string is valid three-letter country code. Empty string is invalid.
+// For more information see https://www.iso.org/obp/ui/#search/code/ Code Type "Officially Assigned Codes"
 func IsISO3166Alpha3(str string) bool {
 	for _, entry := range ISO3166List {
 		if str == entry.Alpha3Code {
@@ -411,24 +429,24 @@ func IsISO3166Alpha3(str string) bool {
 	return false
 }
 
-// IsIP checks if a string is either IP version 4 or 6.
+// IsIP checks if a string is either IP version 4 or 6. Empty string is invalid.
 func IsIP(str string) bool {
 	return net.ParseIP(str) != nil
 }
 
-// IsIPv4 check if the string is an IP version 4.
+// IsIPv4 check if the string is an IP version 4. Empty string is invalid.
 func IsIPv4(str string) bool {
 	ip := net.ParseIP(str)
 	return ip != nil && ip.To4() != nil
 }
 
-// IsIPv6 check if the string is an IP version 6.
+// IsIPv6 check if the string is an IP version 6. Empty string is invalid.
 func IsIPv6(str string) bool {
 	ip := net.ParseIP(str)
 	return ip != nil && ip.To4() == nil
 }
 
-// IsMAC check if a string is valid MAC address.
+// IsMAC check if a string is valid MAC address. Empty string is invalid.
 // Possible MAC formats:
 // 01:23:45:67:89:ab
 // 01:23:45:67:89:ab:cd:ef
@@ -441,17 +459,17 @@ func IsMAC(str string) bool {
 	return err == nil
 }
 
-// IsMongoID check if the string is a valid hex-encoded representation of a MongoDB ObjectId.
+// IsMongoID check if the string is a valid hex-encoded representation of a MongoDB ObjectId. Empty string is invalid.
 func IsMongoID(str string) bool {
 	return rxHexadecimal.MatchString(str) && (len(str) == 24)
 }
 
-// IsLatitude check if a string is valid latitude.
+// IsLatitude check if a string is valid latitude. Empty string is invalid.
 func IsLatitude(str string) bool {
 	return rxLatitude.MatchString(str)
 }
 
-// IsLongitude check if a string is valid longitude.
+// IsLongitude check if a string is valid longitude. Empty string is invalid.
 func IsLongitude(str string) bool {
 	return rxLongitude.MatchString(str)
 }
@@ -512,7 +530,8 @@ func isValidTag(s string) bool {
 	return true
 }
 
-// IsSSN will validate the given string as a U.S. Social Security Number
+// IsSSN will validate the given string as a U.S. Social Security Number.
+// A valid SSN may contains spaces and -. Empty string is invalid.
 func IsSSN(str string) bool {
 	if str == "" || len(str) != 11 {
 		return false

@@ -1425,6 +1425,7 @@ func TestFilePath(t *testing.T) {
 		{"C:\\", true, Win},
 		{"c:\\path\\file\\", true, Win},
 		{"c:/path/file/", false, Unknown},
+		{"", false, Unknown},
 		{"/path/file/", true, Unix},
 		{"/path/file:SAMPLE/", true, Unix},
 		{"/path/file:/.txt", true, Unix},
@@ -1433,7 +1434,7 @@ func TestFilePath(t *testing.T) {
 	for _, test := range tests {
 		actual, osType := IsFilePath(test.param)
 		if actual != test.expected || osType != test.osType {
-			t.Errorf("Expected IsFilePath(%q) to be %v, got %v", test.param, test.expected, actual)
+			t.Errorf("Expected IsFilePath(%q) to be %v, got %v and %d, got %d", test.param, test.expected, actual, osType, test.osType)
 		}
 	}
 }
