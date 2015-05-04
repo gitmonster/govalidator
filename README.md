@@ -37,6 +37,7 @@ func IsASCII(str string) bool
 func IsAlpha(str string) bool
 func IsAlphanumeric(str string) bool
 func IsBase64(str string) bool
+func IsBase64RFC4648(str string) bool
 func IsByteLength(str string, min, max int) bool
 func IsCreditCard(str string) bool
 func IsDataURI(str string) bool
@@ -155,6 +156,7 @@ Here is a list of available validators for struct fields (validator - used funct
 "halfwidth":     IsHalfWidth,
 "variablewidth": IsVariableWidth,
 "base64":        IsBase64,
+"base64rfc4648": IsBase64RFC4648,
 "datauri":       IsDataURI,
 "ip":            IsIP,
 "ipv4":          IsIPv4,

@@ -3,6 +3,7 @@ package govalidator
 import (
 	"strings"
 	"testing"
+	"encoding/base64"
 )
 
 func TestIsAlpha(t *testing.T) {
@@ -1254,12 +1255,39 @@ func TestIsBase64(t *testing.T) {
 			"Fwrd1mnfnDbYohX2zRptLy2ZUn06Qo9pkG5ntvFEPo9bfZeULtjYzIl6K8gJ2uGZ" + "HQIDAQAB", true},
 		{"12345", false},
 		{"", false},
+		{base64.StdEncoding.EncodeToString([]byte{0,1,0,1,0,1}), true},
+		{base64.StdEncoding.EncodeToString([]byte("ABC")), true},
+		{base64.StdEncoding.EncodeToString([]byte("tr竪s 端ber")), true},
+		{base64.StdEncoding.EncodeToString([]byte("tr竪s 端ber")) + "=", false},
 		{"Vml2YW11cyBmZXJtZtesting123", false},
 	}
 	for _, test := range tests {
 		actual := IsBase64(test.param)
 		if actual != test.expected {
 			t.Errorf("Expected IsBase64(%q) to be %v, got %v", test.param, test.expected, actual)
+		}
+	}
+}
+
+func TestIsBase64RFC4648(t *testing.T) {
+	t.Parallel()
+
+	var tests = []struct {
+		param    string
+		expected bool
+	}{
+		{"", true},
+		{base64.StdEncoding.EncodeToString([]byte{0,1,0,1,0,1}), true},
+		{base64.StdEncoding.EncodeToString([]byte("ABC")), true},
+		{base64.StdEncoding.EncodeToString([]byte("tr竪s 端ber")), true},
+		{base64.StdEncoding.EncodeToString([]byte("tr竪s 端ber")) + "=", false},
+		{"12345", false},
+		{"Vml2YW11cyBmZXJtZtesting123", false},
+	}
+	for _, test := range tests {
+		actual := IsBase64RFC4648(test.param)
+		if actual != test.expected {
+			t.Errorf("Expected IsBase64RFC4648(%q) to be %v, got %v", test.param, test.expected, actual)
 		}
 	}
 }

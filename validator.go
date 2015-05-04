@@ -4,6 +4,7 @@ package govalidator
 
 import (
 	"encoding/json"
+	"encoding/base64"
 	"fmt"
 	"net"
 	"net/url"
@@ -365,6 +366,13 @@ func IsVariableWidth(str string) bool {
 // IsBase64 check if a string is base64 encoded.
 func IsBase64(str string) bool {
 	return rxBase64.MatchString(str)
+}
+
+
+// IsBase64 check if a string is base64 encoded.
+func IsBase64RFC4648(str string) bool {
+	_, err := base64.StdEncoding.DecodeString(str)
+	return err == nil
 }
 
 // IsFilePath check is a string is Win or Unix file path and returns it's type.

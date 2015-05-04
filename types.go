@@ -50,6 +50,7 @@ var TagMap = map[string]Validator{
 	"halfwidth":     IsHalfWidth,
 	"variablewidth": IsVariableWidth,
 	"base64":        IsBase64,
+	"base64rfc4648": IsBase64RFC4648,
 	"datauri":       IsDataURI,
 	"ip":            IsIP,
 	"ipv4":          IsIPv4,
