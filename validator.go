@@ -584,7 +584,8 @@ func typeCheck(v reflect.Value, t reflect.StructField) (bool, error) {
 				negate = true
 			}
 			if ok := isValidTag(tagOpt); !ok {
-				continue
+				err := fmt.Errorf("Unkown Validator %s", tagOpt)
+				return false, Error{t.Name, err}
 			}
 			if validatefunc, ok := TagMap[tagOpt]; ok {
 				switch v.Kind() {
