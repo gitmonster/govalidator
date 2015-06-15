@@ -4,7 +4,7 @@ govalidator
 [![wercker status](https://app.wercker.com/status/1ec990b09ea86c910d5f08b0e02c6043/s "wercker status")](https://app.wercker.com/project/bykey/1ec990b09ea86c910d5f08b0e02c6043)
 [![Build Status](https://travis-ci.org/asaskevich/govalidator.svg?branch=master)](https://travis-ci.org/asaskevich/govalidator)
 
-A package of string validators and sanitizers for Go lang. Based on [validator.js](https://github.com/chriso/validator.js).
+A package of validators and sanitizers for strings, structs and collections. Based on [validator.js](https://github.com/chriso/validator.js).
 
 #### Installation
 Make sure that Go is installed on your computer.
@@ -28,11 +28,17 @@ import (
 
 #### List of functions:
 ```go
+func Abs(value float64) float64
 func BlackList(str, chars string) string
 func CamelCaseToUnderscore(str string) string
 func Contains(str, substring string) bool
+func Count(array []interface{}, iterator ConditionIterator) int
+func Each(array []interface{}, iterator Iterator)
+func Filter(array []interface{}, iterator ConditionIterator) []interface{}
+func Find(array []interface{}, iterator ConditionIterator) interface{}
 func GetLine(s string, index int) (string, error)
 func GetLines(s string) []string
+func InRange(value, left, right float64) bool
 func IsASCII(str string) bool
 func IsAlpha(str string) bool
 func IsAlphanumeric(str string) bool
@@ -64,8 +70,13 @@ func IsLowerCase(str string) bool
 func IsMAC(str string) bool
 func IsMongoID(str string) bool
 func IsMultibyte(str string) bool
+func IsNatural(value float64) bool
+func IsNegative(value float64) bool
+func IsNonNegative(value float64) bool
+func IsNonPositive(value float64) bool
 func IsNull(str string) bool
 func IsNumeric(str string) bool
+func IsPositive(value float64) bool
 func IsPrintableASCII(str string) bool
 func IsRGBcolor(str string) bool
 func IsRequestURI(rawurl string) bool
@@ -82,7 +93,9 @@ func IsUUIDv4(str string) bool
 func IsUUIDv5(str string) bool
 func IsUpperCase(str string) bool
 func IsVariableWidth(str string) bool
+func IsWhole(value float64) bool
 func LeftTrim(str, chars string) string
+func Map(array []interface{}, iterator ResultIterator) []interface{}
 func Matches(str, pattern string) bool
 func NormalizeEmail(str string) (string, error)
 func RemoveTags(s string) string
@@ -90,19 +103,28 @@ func ReplacePattern(str, pattern, replace string) string
 func Reverse(s string) string
 func RightTrim(str, chars string) string
 func SafeFileName(str string) string
+func Sign(value float64) float64
 func StripLow(str string, keepNewLines bool) string
 func ToBoolean(str string) (bool, error)
 func ToFloat(str string) (float64, error)
 func ToInt(str string) (int64, error)
-func ToString(obj interface{}) (string, error)
+func ToJSON(obj interface{}) (string, error)
+func ToString(obj interface{}) string
 func Trim(str, chars string) string
 func Truncate(str string, length int, ending string) string
 func UnderscoreToCamelCase(s string) string
 func ValidateStruct(s interface{}) (bool, error)
 func WhiteList(str, chars string) string
+type ConditionIterator
+type Error
+	func (e Error) Error() string
+type Errors
+	func (es Errors) Error() string
 type ISO3166Entry
+type Iterator
+type ResultIterator
 type UnsupportedTypeError
-    func (e *UnsupportedTypeError) Error() string
+	func (e *UnsupportedTypeError) Error() string
 type Validator
 ```
 
@@ -120,6 +142,30 @@ type User struct {
 
 str, _ := govalidator.ToString(&User{"John", "Juan"})
 println(str)
+```
+###### Each, Map, Filter, Count for slices
+Each iterates over the slice/array and calls Iterator for every item
+```go
+data := []interface{}{1, 2, 3, 4, 5}
+var fn govalidator.Iterator = func(value interface{}, index int) {
+	println(value.(int))
+}
+govalidator.Each(data, fn)
+```
+```go
+data := []interface{}{1, 2, 3, 4, 5}
+var fn govalidator.ResultIterator = func(value interface{}, index int) interface{} {
+	return value.(int) * 3
+}
+_ = govalidator.Map(data, fn) // result = []interface{}{1, 6, 9, 12, 15}
+```
+```go
+data := []interface{}{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+var fn govalidator.ConditionIterator = func(value interface{}, index int) bool {
+	return value.(int)%2 == 0
+}
+_ = govalidator.Filter(data, fn) // result = []interface{}{2, 4, 6, 8, 10}
+_ = govalidator.Count(data, fn) // result = 5
 ```
 ###### ValidateStruct [#2](https://github.com/asaskevich/govalidator/pull/2)
 If you want to validate structs, you can use tag `valid` for any field in your structure. All validators used with this field in one tag are separated by comma. If you want to skip validation, place `-` in your tag. If you need a validator that is not on the list below, you can add it like this:
